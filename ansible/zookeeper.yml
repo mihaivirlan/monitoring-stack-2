@@ -1,0 +1,26 @@
+---
+- 
+  hosts: zookeeper
+
+  tasks:
+  - name: Install java packege
+    apt: pkg=openjdk-8-jre-headless state=present
+
+  - name: Install zookeeperd packege
+    apt: pkg=zookeeperd state=present
+
+  - name: zookeeper id
+    template: src=zookeeper-id.j2 dest=/etc/zookeeper/conf/myid 
+    notify: Restart zookeeper
+
+  - name: zookeeper config
+    template: src=zookeeper-cfg.j2 dest=/etc/zookeeper/conf/zoo.cfg
+    notify: Restart zookeeper
+
+  - name: readme files
+    copy: src=zookeeper_readme.txt dest=/root/zookeeper_readme.txt 
+
+  handlers:
+  - name: Restart zookeeper
+    service: name=zookeeper enabled=yes state=restarted
+

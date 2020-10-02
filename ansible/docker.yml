@@ -1,0 +1,34 @@
+---
+- 
+  hosts: docker
+
+  tasks:
+  - name: Install packages
+    apt: 
+      name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common'] 
+      state: present
+
+  - name: apt signing key
+    apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
+
+  - name: apt repository
+    apt_repository: repo="deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable" state=present
+    notify: update apt cache
+
+  - name: Install docker
+    apt: pkg="docker-ce={{ docker_version }}" state=present
+
+  - name: config file
+    copy: src=daemon.json dest=/etc/docker/daemon.json
+    notify: restart docker
+
+  - name: Service docker
+    service: name=docker enabled=yes state=started
+
+  handlers:
+  - name: update apt cache
+    apt: update_cache=yes
+
+  - name: restart docker
+    service: name=docker state=restarted
+

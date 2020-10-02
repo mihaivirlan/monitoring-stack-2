@@ -1,0 +1,7 @@
+
+cassandra_cluster_name: "MyCluster"
+cassandra_interface: "enp0s8"
+cassandra_seed1: "192.168.134.21"
+
+jmx_exporter_url: "https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar"
+

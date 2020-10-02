@@ -1,0 +1,6 @@
+
+- fully automate rancher add hosts
+- fully automate rancher add stacks
+- use ansible container module instead of "shell docker run"
+
+

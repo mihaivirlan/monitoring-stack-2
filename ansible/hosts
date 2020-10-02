@@ -1,0 +1,30 @@
+
+[docker]
+rancher
+docker1
+docker2
+
+[gluster-client]
+docker1
+docker2
+
+[gluster-server]
+gluster1
+gluster2
+gluster3
+
+[zookeeper]
+kafka1    zk_id=1
+kafka2    zk_id=2
+kafka3    zk_id=3
+
+[kafka]
+kafka1    broker_id=1
+kafka2    broker_id=2
+kafka3    broker_id=3
+
+[cassandra]
+cassandra1
+cassandra2
+cassandra3
+

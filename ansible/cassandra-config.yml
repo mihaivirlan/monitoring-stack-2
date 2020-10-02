@@ -1,0 +1,27 @@
+---
+- 
+  hosts: cassandra
+
+  tasks:
+  - name: cassandra config file
+    template: src=cassandra.yaml dest=/etc/cassandra/cassandra.yaml
+
+  - name: directory /root/.cassandra
+    file: path=/root/.cassandra state=directory mode=0700
+
+  - name: file cqlshrc
+    template: src=cqlshrc dest=/root/.cassandra/cqlshrc 
+
+  - name: readme file
+    copy: src=cassandra_readme.txt dest=/root/cassandra_readme.txt
+
+  - name: jmx-exporter config
+    copy: src=cassandra_jmx_exporter.yaml dest=/etc/cassandra/cassandra_jmx_exporter.yaml owner=root group=root mode=644 force=yes
+
+  - name: file cassandra-env.sh
+    template: src=cassandra-env.sh dest=/etc/cassandra/cassandra-env.sh
+
+  handlers:
+  - name: update apt cache
+    apt: update_cache=yes
+

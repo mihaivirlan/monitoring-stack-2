@@ -1,0 +1,37 @@
+---
+- 
+  hosts: kafka cassandra gluster-server rancher
+
+  vars:
+    nodeexporter_url: "https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz"
+
+  tasks:
+  - name: local get nodeexporter archive
+    local_action: get_url url={{ nodeexporter_url }} dest=files/node_exporter-0.18.1.linux-amd64.tar.gz
+    run_once: True
+
+  - name: extract archive
+    unarchive: src=node_exporter-0.18.1.linux-amd64.tar.gz dest=/opt
+    args:
+      creates: /opt/node_exporter-0.18.1.linux-amd64
+ 
+  - name: create nodeexporter group
+    group: name=nodeexporter state=present
+
+  - name: create nodeexporter user
+    user: name=nodeexporter group=nodeexporter
+
+  - name: create link
+    shell: "cd /opt; ln -s node_exporter-0.18.1.linux-amd64 nodeexporter"
+    args:
+      creates: "/opt/nodeexporter"
+
+  - name: kafka startup file 
+    copy: src=nodeexporter.systemd dest=/etc/systemd/system/nodeexporter.service owner=root group=root mode=644 force=yes
+    notify: reload systemd
+ 
+  handlers:
+  - name: reload systemd
+    shell: "systemctl daemon-reload; systemctl restart nodeexporter"
+    
+

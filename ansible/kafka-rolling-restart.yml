@@ -1,0 +1,18 @@
+---
+- name: kafka rolling restart
+  hosts: kafka
+  gather_facts: False
+  serial: 1
+
+  tasks:
+  - name: run the restart command
+    shell: "mv /var/log/kafka/server.log /var/log/kafka/server.log.old;  systemctl restart kafka"
+
+  - name: wait for logs
+    wait_for: 
+      search_regex: 'started \(kafka.server.KafkaServer\)' 
+      path: '/var/log/kafka/server.log'
+
+  - name: give it another 10 seconds
+    wait_for: timeout=10
+

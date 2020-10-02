@@ -1,0 +1,42 @@
+---
+- 
+  hosts: gluster-server
+
+  tasks:
+  - name: Install packages
+    apt: 
+      pkg: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'acl']
+      state: present
+
+  - name: apt repository
+    apt_repository: repo="ppa:gluster/glusterfs-{{ gluster_version }}" state=present
+    notify: update apt cache
+
+  - name: Install glusterfs-server
+    apt: pkg="glusterfs-server" state=present
+
+  - name: Service glusterd
+    service: name=glusterd state=started enabled=yes
+
+  - name: directory gluster/vol0
+    file: path=/gluster/volume0 state=directory mode=0700 owner=root group=root
+   
+  - name: gluster peer probe
+    shell: |
+       gluster peer probe gluster2 
+       gluster peer probe gluster3
+       gluster peer status
+    when: ansible_hostname == 'gluster1'
+    changed_when: False
+
+  - name: gluster volume create
+    shell: |
+       [ gluster volume info | fgrep -q vol0 ] || gluster volume create vol0 replica 3 arbiter 1 gluster1:/gluster/vol0 gluster2:/gluster/vol0 gluster3:/gluster/vol0 force
+       gluster volume start vol0
+    when: ansible_hostname == 'gluster1'
+    changed_when: False
+
+  handlers:
+  - name: update apt cache
+    apt: update_cache=yes
+

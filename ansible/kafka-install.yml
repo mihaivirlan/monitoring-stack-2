@@ -1,0 +1,41 @@
+---
+- 
+  hosts: kafka
+
+  tasks:
+  - name: Install java package
+    apt: pkg=openjdk-8-jre-headless state=present
+          
+  - name: create kafka group 
+    group: name=kafka state=present
+ 
+  - name: create kafka user
+    user: name=kafka group=kafka
+    
+  - name: create log directory
+    file: path=/var/log/kafka state=directory owner=kafka group=kafka mode=0750
+  
+  - name: kafka logs (data) directory
+    file: path={{ kafka_dir }} state=directory owner=kafka group=kafka mode=0700
+
+  - name: local get kafka archive
+    local_action: get_url url={{ kafka_url }} dest=files/kafka_{{ kafka_version }}.tgz
+    run_once: True
+
+  - name: extract archive
+    unarchive: src=kafka_{{ kafka_version }}.tgz dest=/opt
+    args:
+      creates: /opt/kafka_{{ kafka_version }}
+
+  - name: create link
+    shell: "cd /opt; ln -s kafka_{{ kafka_version }} kafka"
+    args:
+      creates: "/opt/kafka"
+
+  - name: local get jmx-exporter archive
+    local_action: get_url url={{ jmx_exporter_url }} dest=files/jmx_prometheus_javaagent-0.12.0.jar
+    run_once: True
+
+  - name: jmx-exporter
+    copy: src=jmx_prometheus_javaagent-0.12.0.jar dest=/opt/jmx_prometheus_javaagent-0.12.0.jar owner=root group=root mode=644 force=yes
+

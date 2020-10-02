@@ -1,0 +1,22 @@
+---
+- 
+  hosts: kafka
+
+  tasks:
+  - name: kafka startup file 
+    template: src=kafka.systemd.j2 dest=/etc/systemd/system/kafka.service owner=root group=root mode=644 force=yes
+    notify: reload systemd
+   
+  - name: config file
+    template: src=kafka-server.properties.j2 dest=/opt/kafka/config/server.properties owner=root group=root mode=0644
+
+  - name: jmx-exporter config
+    copy: src=kafka_jmx_exporter.yml dest=/opt/kafka_jmx_exporter.yml owner=root group=root mode=644 force=yes
+
+  - name: readme files
+    copy: src=kafka_readme.txt dest=/root/kafka_readme.txt
+
+  handlers:
+  - name: reload systemd
+    shell: "systemctl daemon-reload"
+

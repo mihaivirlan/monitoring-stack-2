@@ -1,0 +1,31 @@
+---
+- 
+  hosts: cassandra
+
+  tasks:
+  - name: Install packages
+    apt: 
+      name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common'] 
+      state: present
+
+  - name: apt signing key
+    apt_key: url=https://www.apache.org/dist/cassandra/KEYS state=present
+
+  - name: apt repository
+    apt_repository: repo="deb http://www.apache.org/dist/cassandra/debian 311x main" state=present
+    notify: update apt cache
+
+  - name: Install cassandra
+    apt: pkg="cassandra" state=present
+
+  - name: local get jmx-exporter archive
+    local_action: get_url url={{ jmx_exporter_url }} dest=files/jmx_prometheus_javaagent-0.12.0.jar
+    run_once: True
+
+  - name: jmx-exporter
+    copy: src=jmx_prometheus_javaagent-0.12.0.jar dest=/usr/share/cassandra/lib/jmx_prometheus_javaagent-0.12.0.jar owner=root group=root mode=644 force=yes
+
+  handlers:
+  - name: update apt cache
+    apt: update_cache=yes
+

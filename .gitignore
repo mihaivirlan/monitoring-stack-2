@@ -1,0 +1,8 @@
+.idea/
+.vagrant/
+id_rsa.pub
+*.log
+*.retry
+*.tgz
+*.tar.gz
+*.jar

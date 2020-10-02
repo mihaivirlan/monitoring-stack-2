@@ -1,0 +1,33 @@
+---
+- name: cassandra rolling restart
+  hosts: cassandra
+  gather_facts: False
+  serial: 1
+
+  tasks:
+  - name: reset initial cluster
+    shell: |
+        if grep -rq 'Test Cluster' /var/lib/cassandra/data/system/
+        then
+           systemctl stop cassandra
+           rm -rf /var/lib/cassandra/*
+           echo cluster reset
+        fi      
+    register: shell_output
+
+  - debug: msg={{ shell_output.stdout }}
+
+  - name: run the restart command
+    shell: "mv /var/log/cassandra/system.log /var/log/cassandra/system.log.old; systemctl restart cassandra"
+
+  - name: wait for logs
+    wait_for: 
+      search_regex: 'Starting listening for CQL clients on' 
+      path: '/var/log/cassandra/system.log'
+
+  - name: give it another 10 seconds
+    wait_for: timeout=10
+
+  - name: Service cassandra
+    service: name=cassandra enabled=yes state=started
+

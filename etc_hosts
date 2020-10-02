@@ -1,0 +1,20 @@
+127.0.0.1	localhost
+
+192.168.9.10	rancher
+192.168.9.11	docker1
+192.168.9.12	docker2
+
+# cassandra
+192.168.9.21  cassandra1  c1
+192.168.9.22  cassandra2  c2 
+192.168.9.23  cassandra3  c3 
+
+# kafka
+192.168.9.31  kafka1  zk1
+192.168.9.32  kafka2  zk2
+192.168.9.33  kafka3  zk3
+
+# glusterfs
+192.168.9.41  gluster1
+192.168.9.42  gluster2
+192.168.9.43  gluster3

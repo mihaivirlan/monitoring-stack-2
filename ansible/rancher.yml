@@ -1,0 +1,23 @@
+---
+- 
+  hosts: rancher
+
+  tasks:
+  - name: mysql db cattle
+    mysql_db: name=cattle state=present
+
+  - name: mysql user cattle
+    mysql_user: 
+      name: "cattle" 
+      password: "{{ cattle_mysql_pass }}"
+      priv: "cattle.*:ALL"
+      host: "%"
+      state: present 
+
+  - name: docker run
+    shell: |
+            docker run -d --restart=unless-stopped -p 8080:8080 rancher/server:v1.6.26 --db-host 192.168.134.10 --db-port 3306 --db-user cattle --db-pass "{{ cattle_mysql_pass }}" --db-name cattle    
+
+  - name: rancher is starting - wait for port 8080
+    wait_for: port=8080
+

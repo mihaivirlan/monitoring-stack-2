@@ -1,0 +1,18 @@
+---
+- 
+  hosts: docker1
+
+  tasks:
+  - file: path=/persistence/monitoring-stack                 state=directory mode=0755
+  - file: path=/persistence/monitoring-stack/grafana_data    state=directory mode=0777
+  - file: path=/persistence/monitoring-stack/prometheus_data state=directory mode=0777
+
+  - copy: src=../dockprom/{{ item }}/ dest=/persistence/monitoring-stack/{{ item }}/
+    with_items:
+      - alertmanager
+      - caddy
+      - grafana
+      - prometheus
+
+  - file: path="/persistence/monitoring-stack/grafana/setup.sh" mode=0755
+

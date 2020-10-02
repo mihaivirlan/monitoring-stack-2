@@ -1,0 +1,20 @@
+# ~/.ssh/config 
+
+Host *
+  ForwardAgent yes
+  ServerAliveInterval 60
+  Ciphers aes128-gcm@openssh.com,aes128-ctr,chacha20-poly1305@openssh.com
+
+### LOCAL VMs - no domainname
+Host rancher docker1 docker2 cassandra1 cassandra2 cassandra3 c1 c2 c3 kafka1 kafka2 kafka3 zk1 zk2 zk3 gluster1 gluster2 gluster3
+  User root
+  Port 22
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
+
+### aws ephemeral instances
+#Host 10.*
+#  StrictHostKeyChecking no
+#  UserKnownHostsFile=/dev/null
+
+

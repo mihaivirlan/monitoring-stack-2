@@ -1,0 +1,18 @@
+[Unit]
+Description=Kafka
+Before=
+After=network.target
+
+[Service]
+User=kafka
+Environment=CHDIR=/opt/kafka LOG_DIR=/var/log/kafka
+
+Environment="KAFKA_HEAP_OPTS=-Xmx512M -Xms512M"
+Environment="KAFKA_OPTS=-javaagent:/opt/jmx_prometheus_javaagent-0.12.0.jar=9404:/opt/kafka_jmx_exporter.yml"
+
+ExecStart=/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+

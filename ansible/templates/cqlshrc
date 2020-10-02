@@ -1,0 +1,8 @@
+
+[connection]
+host = cassandra1
+
+[authentication]
+user = cassandra
+password = cassandra
+
